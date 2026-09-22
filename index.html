@@ -1,1 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>🎬 CineMagic · Movie Ticket Booking</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
+  :root {
+    --gold: #FFD966;
+    --gold-dark: #E6A017;
+    --dark: #0a0e17;
+    --dark-2: #121826;
+    --card: #1a2233;
+    --card-hover: #222c42;
+    --text: #e8ecf4;
+    --text-dim: #94a3b8;
+    --red: #ef4444;
+    --green: #10b981;
+    --border: rgba(255, 215, 0, 0.15);
+  }
+
+  body {
+    background: radial-gradient(ellipse at top, #1a1f35 0%, #0a0e17 70%);
+    min-height: 100vh;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ===== ANIMATED BACKGROUND ===== */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(99, 102, 241, 0.08) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    padding: 1rem 2rem;
+    background: rgba(10, 14, 23, 0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    display: flex; align-items: center; gap: 0.7rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #FFD966, #E6A017);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .logo i {
+    font-size: 1.8rem;
+    background: linear-gradient(135deg, #FFD966, #E6A017);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: spin 8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .header-actions {
+    display: flex; align-items: center; gap: 1rem;
+  }
+
+  .user-chip {
+    display: flex; align-items: center; gap: 0.6rem;
+    background: rgba(255, 215, 0, 0.08);
+    border: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+    border-radius: 60px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .user-chip:hover {
+    background: rgba(255, 215, 0, 0.15);
+    cursor: pointer;
+  }
+
+  .user-chip i { color: var(--gold); }
+
+  /* ===== HERO ===== */
+  .hero {
+    position: relative;
+    padding: 2.5rem 2rem 1.5rem;
+    text-align: center;
+    z-index: 1;
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, #fff 0%, #FFD966 50%, #E6A017 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+  }
+
+  .hero p {
+    color: var(--text-dim);
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+  }
+
+  /* ===== MAIN LAYOUT ===== */
+  .main-container {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem 2rem 3rem;
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 1024px) {
+    .main-container { grid-template-columns: 1fr; }
+  }
+
+  /* ===== PANEL STYLING ===== */
+  .panel {
+    background: linear-gradient(145deg, rgba(26, 34, 51, 0.9), rgba(18, 24, 38, 0.9));
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .panel-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1.2rem;
+    letter-spacing: 0.5px;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .panel-title i { color: var(--gold); }
+
+  .step-badge {
+    margin-left: auto;
+    background: rgba(255, 215, 0, 0.15);
+    color: var(--gold);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.25rem 0.7rem;
+    border-radius: 30px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ===== MOVIE LIST ===== */
+  .movie-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    max-height: 580px;
+    overflow-y: auto;
+    padding-right: 0.3rem;
+  }
+
+  .movie-list::-webkit-scrollbar { width: 6px; }
+  .movie-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 215, 0, 0.3);
+    border-radius: 10px;
+  }
+
+  .movie-card {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.85rem;
+    background: rgba(15, 22, 36, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .movie-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, var(--gold), var(--gold-dark));
+    transform: scaleY(0);
+    transition: transform 0.3s;
+  }
+
+  .movie-card:hover {
+    background: var(--card-hover);
+    transform: translateX(5px);
+    border-color: rgba(255, 215, 0, 0.3);
+  }
+
+  .movie-card.active {
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.12), rgba(255, 215, 0, 0.02));
+    border-color: rgba(255, 215, 0, 0.4);
+    box-shadow: 0 10px 25px rgba(255, 215, 0, 0.1);
+  }
+
+  .movie-card.active::before { transform: scaleY(1); }
+
+  .movie-poster {
+    width: 55px; height: 55px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .movie-poster.p1 { background: linear-gradient(135deg, #f59e0b, #dc2626); }
+  .movie-poster.p2 { background: linear-gradient(135deg, #3b82f6, #8b5cf6); }
+  .movie-poster.p3 { background: linear-gradient(135deg, #111827, #374151); }
+  .movie-poster.p4 { background: linear-gradient(135deg, #ec4899, #f97316); }
+  .movie-poster.p5 { background: linear-gradient(135deg, #10b981, #06b6d4); }
+
+  .movie-poster i { color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+
+  .movie-info { flex: 1; min-width: 0; }
+
+  .movie-info h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .movie-meta {
+    display: flex;
+    gap: 0.8rem;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+
+  .movie-meta span { display: flex; align-items: center; gap: 0.25rem; }
+  .movie-meta i { color: var(--gold); font-size: 0.7rem; }
+  .movie-meta .rating { color: var(--gold); font-weight: 700; }
+
+  /* ===== RIGHT SIDE ===== */
+  .right-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  /* ===== DATE / TIME SELECTOR ===== */
+  .pills-row {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.2rem;
+  }
+
+  .pills-row:last-child { margin-bottom: 0; }
+
+  .pill {
+    padding: 0.65rem 1.2rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .pill i { font-size: 0.75rem; color: var(--gold); }
+
+  .pill:hover {
+    background: rgba(255, 215, 0, 0.08);
+    border-color: rgba(255, 215, 0, 0.3);
+    color: var(--text);
+    transform: translateY(-2px);
+  }
+
+  .pill.active {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #0a0e17;
+    border-color: var(--gold);
+    font-weight: 700;
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.35);
+  }
+
+  .pill.active i { color: #0a0e17; }
+
+  .divider-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 0.7rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .divider-label i { color: var(--gold); }
+
+  /* ===== SCREEN ===== */
+  .screen-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.8rem;
+  }
+
+  .screen-glow {
+    width: 70%;
+    height: 40px;
+    background: linear-gradient(180deg, rgba(255, 215, 0, 0.4) 0%, transparent 100%);
+    border-radius: 50% 50% 0 0;
+    filter: blur(12px);
+    margin-bottom: -20px;
+  }
+
+  .screen-bar {
+    width: 75%;
+    height: 8px;
+    background: linear-gradient(90deg, transparent, var(--gold), var(--gold-dark), var(--gold), transparent);
+    border-radius: 50%;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+    margin-bottom: 0.6rem;
+  }
+
+  .screen-text {
+    font-size: 0.7rem;
+    letter-spacing: 6px;
+    color: var(--text-dim);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  /* ===== SEATS ===== */
+  .seats-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .seat-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .row-label {
+    width: 22px;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .seat {
+    width: 36px;
+    height: 36px;
+    background: rgba(30, 41, 59, 0.9);
+    border: 1.5px solid #2d3c52;
+    border-radius: 10px 10px 4px 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    color: #64748b;
+    font-weight: 700;
+  }
+
+  .seat:not(.occupied):hover {
+    background: rgba(255, 215, 0, 0.2);
+    border-color: var(--gold);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 12px rgba(255, 215, 0, 0.2);
+  }
+
+  .seat.selected {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border-color: var(--gold);
+    color: #0a0e17;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6), 0 4px 8px rgba(0,0,0,0.3);
+    animation: seatPop 0.3s ease;
+  }
+
+  @keyframes seatPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+
+  .seat.occupied {
+    background: #2a2f3d;
+    border-color: #1a1f2a;
+    color: #3d4555;
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .seat.occupied::after {
+    content: '×';
+    font-size: 1.1rem;
+    font-weight: 300;
+  }
+
+  .seat.occupied span { display: none; }
+
+  /* ===== LEGEND ===== */
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 0.8rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+
+  .legend-box {
+    width: 18px;
+    height: 18px;
+    border-radius: 6px 6px 3px 3px;
+    background: rgba(30, 41, 59, 0.9);
+    border: 1.5px solid #2d3c52;
+  }
+
+  .legend-box.selected {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border-color: var(--gold);
+  }
+
+  .legend-box.occupied {
+    background: #2a2f3d;
+    border-color: #1a1f2a;
+    opacity: 0.5;
+  }
+
+  /* ===== BOOKING FOOTER ===== */
+  .booking-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1.2rem;
+    border-top: 1px solid rgba(255, 215, 0, 0.15);
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .summary {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+  }
+
+  .summary i { color: var(--gold); font-size: 1rem; }
+
+  .summary strong { color: var(--text); }
+
+  .price-tag {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    padding: 0.4rem 1rem;
+    border-radius: 30px;
+    color: var(--gold);
+    font-weight: 800;
+    font-size: 1.1rem;
+  }
+
+  .book-btn {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border: none;
+    padding: 0.9rem 2rem;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: #0a0e17;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    transition: all 0.25s;
+    box-shadow: 0 10px 25px -5px rgba(255, 215, 0, 0.4);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .book-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px -5px rgba(255, 215, 0, 0.6);
+  }
+
+  .book-btn:active:not(:disabled) { transform: translateY(-1px); }
+
+  .book-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+    animation: fadeIn 0.3s;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal {
+    background: linear-gradient(145deg, #1a2233, #0f1520);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 24px;
+    padding: 2rem;
+    max-width: 480px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7);
+    animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-close:hover {
+    background: var(--red);
+    color: white;
+    transform: rotate(90deg);
+  }
+
+  .success-icon {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--green), #06b6d4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: white;
+    margin: 0 auto 1.2rem;
+    box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4);
+    animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  @keyframes bounceIn {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+
+  .modal h2 {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+
+  .modal .modal-subtitle {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .booking-details {
+    background: rgba(15, 22, 36, 0.6);
+    border: 1px solid rgba(255, 215, 0, 0.15);
+    border-radius: 16px;
+    padding: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    font-size: 0.88rem;
+  }
+
+  .detail-row:not(:last-child) {
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+  }
+
+  .detail-row .label {
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .detail-row .label i { color: var(--gold); font-size: 0.85rem; }
+
+  .detail-row .value {
+    color: var(--text);
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .detail-row.total {
+    border-top: 2px solid rgba(255, 215, 0, 0.2);
+    border-bottom: none;
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .detail-row.total .value {
+    color: var(--gold);
+    font-size: 1.4rem;
+    font-weight: 800;
+  }
+
+  .booking-ref {
+    text-align: center;
+    background: rgba(255, 215, 0, 0.08);
+    border: 1px dashed rgba(255, 215, 0, 0.4);
+    border-radius: 14px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .booking-ref span {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .booking-ref strong {
+    font-size: 1.5rem;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+  }
+
+  .modal-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border: none;
+    color: #0a0e17;
+    padding: 1rem;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    transition: all 0.25s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .modal-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(255, 215, 0, 0.5);
+  }
+
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(150px);
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #0a0e17;
+    padding: 1rem 2rem;
+    border-radius: 14px;
+    font-weight: 700;
+    box-shadow: 0 20px 40px rgba(255, 215, 0, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    z-index: 2000;
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    font-size: 0.9rem;
+  }
+
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    header { padding: 0.8rem 1rem; }
+    .logo { font-size: 1.5rem; }
+    .user-chip span { display: none; }
+    .hero { padding: 1.5rem 1rem 1rem; }
+    .main-container { padding: 0.8rem 1rem 2rem; }
+    .panel { padding: 1.2rem; border-radius: 18px; }
+    .seat { width: 28px; height: 28px; font-size: 0.5rem; }
+    .seat-row { gap: 0.35rem; }
+    .row-label { width: 18px; font-size: 0.65rem; }
+    .book-btn { padding: 0.8rem 1.4rem; font-size: 0.85rem; width: 100%; justify-content: center; }
+    .booking-footer { flex-direction: column; align-items: stretch; }
+    .summary { justify-content: space-between; }
+  }
+
+  /* ===== CONFETTI ===== */
+  .confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: var(--gold);
+    top: -20px;
+    z-index: 999;
+    pointer-events: none;
+    animation: fall linear forwards;
+  }
+
+  @keyframes fall {
+    to {
+      transform: translateY(100vh) rotate(720deg);
+      opacity: 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <i class="fas fa-film"></i>
+    <span>CineMagic</span>
+  </div>
+  <div class="header-actions">
+    <div class="user-chip">
+      <i class="fas fa-user-circle"></i>
+      <span>Alex Johnson</span>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Book Your Movie Magic</h1>
+  <p>✨ Pick a movie · Choose your show · Grab your seats ✨</p>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-container">
+
+  <!-- LEFT: MOVIE LIST -->
+  <div class="panel">
+    <div class="panel-title">
+      <i class="fas fa-video"></i>
+      Now Showing
+      <span class="step-badge">STEP 1</span>
+    </div>
+    <div class="movie-list" id="movieList">
+      <!-- Movies injected by JS -->
+    </div>
+  </div>
+
+  <!-- RIGHT: BOOKING -->
+  <div class="right-stack">
+
+    <!-- SHOWTIME -->
+    <div class="panel">
+      <div class="panel-title">
+        <i class="fas fa-clock"></i>
+        Showtime
+        <span class="step-badge">STEP 2</span>
+      </div>
+
+      <div class="divider-label"><i class="fas fa-calendar-day"></i> Choose Date</div>
+      <div class="pills-row" id="datePills"></div>
+
+      <div class="divider-label" style="margin-top: 1.2rem;"><i class="fas fa-hourglass-half"></i> Choose Time</div>
+      <div class="pills-row" id="timePills"></div>
+    </div>
+
+    <!-- SEATS -->
+    <div class="panel">
+      <div class="panel-title">
+        <i class="fas fa-couch"></i>
+        Select Seats
+        <span class="step-badge">STEP 3</span>
+      </div>
+
+      <div class="screen-area">
+        <div class="screen-glow"></div>
+        <div class="screen-bar"></div>
+        <div class="screen-text">S C R E E N</div>
+      </div>
+
+      <div class="seats-container" id="seatsContainer"></div>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-box"></div> Available</div>
+        <div class="legend-item"><div class="legend-box selected"></div> Selected</div>
+        <div class="legend-item"><div class="legend-box occupied"></div> Occupied</div>
+      </div>
+
+      <div class="booking-footer">
+        <div class="summary">
+          <i class="fas fa-ticket-alt"></i>
+          <span><strong id="seatCount">0</strong> seats</span>
+          <span class="price-tag" id="totalPrice">$0</span>
+        </div>
+        <button class="book-btn" id="bookBtn" disabled>
+          <i class="fas fa-check-circle"></i>
+          Book Now
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+    <div class="success-icon"><i class="fas fa-check"></i></div>
+    <h2>Booking Confirmed! 🎉</h2>
+    <p class="modal-subtitle">Your tickets have been booked successfully.</p>
+
+    <div class="booking-ref">
+      <span>Booking Reference</span>
+      <strong id="bookingRef">—</strong>
+    </div>
+
+    <div class="booking-details" id="bookingDetails"></div>
+
+    <button class="modal-btn" onclick="closeModal()">
+      <i class="fas fa-thumbs-up"></i>
+      Awesome, Got It!
+    </button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <i class="fas fa-info-circle"></i>
+  <span id="toastText">Message</span>
+</div>
+
+<script>
+/* =========================================================
+   🎬 CINEMAGIC · MOVIE BOOKING ENGINE
+   ========================================================= */
+
+// ===== DATA =====
+const MOVIES = [
+  { id: 1, title: 'Dune: Part Two', genre: 'Sci-Fi', duration: '2h 46m', rating: 8.8, price: 14, poster: 'p1', icon: 'fa-meteor' },
+  { id: 2, title: 'Oppenheimer',    genre: 'Biopic',  duration: '3h 0m',  rating: 8.5, price: 12, poster: 'p2', icon: 'fa-atom' },
+  { id: 3, title: 'The Batman',     genre: 'Action',  duration: '2h 56m', rating: 7.9, price: 13, poster: 'p3', icon: 'fa-mask' },
+  { id: 4, title: 'Poor Things',    genre: 'Drama',   duration: '2h 21m', rating: 8.1, price: 11, poster: 'p4', icon: 'fa-heart' },
+  { id: 5, title: 'Interstellar',   genre: 'Sci-Fi',  duration: '2h 49m', rating: 8.7, price: 15, poster: 'p5', icon: 'fa-rocket' }
+];
+
+const DATES = [
+  { label: 'Fri, Mar 21', value: '2025-03-21', icon: 'fa-calendar-day' },
+  { label: 'Sat, Mar 22', value: '2025-03-22', icon: 'fa-calendar-day' },
+  { label: 'Sun, Mar 23', value: '2025-03-23', icon: 'fa-calendar-day' },
+  { label: 'Mon, Mar 24', value: '2025-03-24', icon: 'fa-calendar-day' }
+];
+
+const TIMES = [
+  { label: '11:00 AM',
